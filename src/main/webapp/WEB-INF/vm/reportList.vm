@@ -1,0 +1,134 @@
+<div class="col-md-12">
+	<div class="panel panel-primary">
+		<div class="panel-heading">
+			<h4>$title</h4>
+		</div>
+		<div class="panel-body">
+			<form class="form pull-right">
+				<div class="form-group col-xs-5">
+					<input type="text" id="startDate" class="datepicker form-control" placeholder="开始日期" title="开始日期" />
+				</div>
+				<div class="form-group col-xs-5">
+					<input type="text" id="endDate" class="datepicker form-control" placeholder="结束日期" title="结束日期" />
+				</div>
+				<div class="form-group col-xs-2">
+					<button type="button" class="btn btn-primary" id="table_filter_btn">开始筛选</button>
+				</div>
+			</form>
+		
+			<table class="table table-striped" id="report_list_table">
+				<thead>
+					<tr>
+						<th>序号</th>
+						<th>汇报人</th>
+						<th>直接汇报</th>
+						<th>开始时间</th>
+						<th>结束时间</th>
+						<th>创建时间</th>
+						<th>状态</th>
+						<th>操作</td>
+					</tr>
+				</thead>
+				<tbody>
+					#foreach ($report in $reports)
+					<tr>
+						<td>$velocityCount</td>
+						<td>$report.reporterName</td>
+						<td>$report.superiorName</td>
+						<td>$dateTool.format("yyyy-MM-dd", $report.startDate)</td>
+						<td>$dateTool.format("yyyy-MM-dd", $report.endDate)</td>
+						<td>$dateTool.format("yyyy-MM-dd HH:mm:ss", $report.createtime)</td>
+						<td>
+						#if ($report.status == 0)
+							草稿
+						#else
+							已提交
+						#end
+						</td>
+						<td>
+						#if ($report.status == 0)
+							<a href='/wr/modifyDraft?id=$report.id' style="margin-right:10px;">修改</a>
+							<a href='/wr/deleteReport?id=$report.id' class="delete_report_btn">删除</a>
+						#else
+							<a href='/wr/reportDetail?id=$report.id'>详情</a>
+						#end
+						</td>
+					</tr>
+					#end
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+function getTime(str) {
+	var date = new Date(str.replace(/-/g, "/"));
+	return date.getTime();
+}
+
+$.fn.dataTable.ext.search.push(
+    function(settings, searchData, index, rowData, counter) {
+        var startDateStr = $("#startDate").val();
+        var endDateStr = $("#endDate").val();
+        
+        if ($.trim(startDateStr) != "") {
+        	if (getTime(searchData[3]) < getTime(startDateStr)) {
+        		return false;
+        	}
+        }
+        if ($.trim(endDateStr) != "") {
+        	if (getTime(searchData[4]) > getTime(endDateStr)) {
+        		return false;
+        	}
+        }
+        
+        return true;
+    }
+);
+
+$(function() {
+	$(".datepicker").datepicker({
+		dateFormat: "yy-mm-dd"
+	});
+
+	var dataTable = $("#report_list_table").DataTable({
+		ordering: false,
+		lengthChange: false,
+		pageLength: 15,
+		language: {
+			emptyTable: "无数据",
+			zeroRecords: "无数据",
+			search: "搜索：",
+			info: "共 _TOTAL_ 条记录",
+			infoFiltered: "（从 _MAX_ 条记录中筛选出）",
+			infoEmpty: "共 0 条记录",
+			paginate: {
+				previous: "上一页",
+				next: "下一页"
+			}
+		}
+	});
+	
+	$(".delete_report_btn").click(function(event) {
+		event.preventDefault();
+		var url = $(this).attr("href");
+		var tr = $(this).parent("td").parent("tr");
+		$.ajax({
+			url: url,
+			dataType: "json",
+			success: function(data) {
+				if (data.code == 0) {
+					tr.remove();
+					alert("删除成功");
+				} else {
+					alert("删除失败");
+				}
+			}
+		});
+	});
+	
+	$("#table_filter_btn").click(function() {
+		dataTable.draw();
+	});
+});
+</script>

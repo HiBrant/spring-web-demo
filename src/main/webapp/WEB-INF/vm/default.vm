@@ -1,0 +1,39 @@
+<html>
+	<head>
+		<title>云阅读后台组周报系统</title>
+		<meta http-equiv="Content-Type" content="text/html;charset=UTF-8" />
+		<link rel="stylesheet" href="/wr/css/jquery-ui.min.css" />
+		<link rel="stylesheet" href="/wr/css/bootstrap.min.css" />
+		<link rel="stylesheet" href="/wr/css/jumbotron-narrow.css" />
+		<link rel="stylesheet" href="/wr/css/dataTables.bootstrap.min.css" />
+		<script type="text/javascript" src="/wr/js/jquery-3.1.1.min.js"></script>
+		<script type="text/javascript" src="/wr/js/jquery-ui.min.js"></script>
+		<script type="text/javascript" src="/wr/js/bootstrap.min.js"></script>
+		<script type="text/javascript" src="/wr/js/jquery.dataTables.min.js"></script>
+		<script type="text/javascript" src="/wr/js/dataTables.bootstrap.min.js"></script>
+		<script type="text/javascript" src="/wr/js/jquery.form.js"></script>
+	</head>
+	<body>
+		<div class="container">
+			<div class="header clearfix">
+				<nav>
+					<ul class="nav nav-pills pull-right">
+						<li role="presentation"><a href="/wr/myReport">我的周报</a></li>
+						#if ($user.role > 0)
+						<li role="presentation"><a href="/wr/teamReport">组员周报</a></li>
+						#end
+						<li role="presentation"><a href="/wr/createReport">创建周报</a></li>
+						#if ($user.role >= 10)
+						<li role="presentation"><a href="/wr/userMgmt">人员管理</a></li>
+						#end
+						<li role="presentation"><a href="/wr/userInfo">$user.fullname</a></li>
+					</ul>
+				</nav>
+				<h3 class="text-muted"><a href="/wr/index.html">云阅读后台组周报系统</a></h3>
+			</div>
+			<div class="row">
+				$screen_content
+			</div>
+		</div>
+	</body>
+</html>

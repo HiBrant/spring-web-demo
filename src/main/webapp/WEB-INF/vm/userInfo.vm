@@ -1,0 +1,62 @@
+<div class="col-md-6">
+	<div class="panel panel-primary">
+		<div class="panel-heading">
+			<h4>个人信息</h4>
+		</div>
+		<div class="panel-body">
+			<table class="table">
+				<thead>
+					<tr>
+						<th>姓名</th>
+						<th>角色</th>
+						<th>直接汇报人</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td>$user.fullname</td>
+						<td>
+						#if ($user.role == 99)
+						管理员
+						#elseif ($user.role == 10)
+						主管
+						#elseif ($user.role == 1)
+						组长
+						#else
+						组员
+						#end
+						</td>
+						<td>$superiorName</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+#if ($user.role > 0)
+<div class="col-md-6">
+	<div class="panel panel-primary">
+		<div class="panel-heading">
+			<h4>直接组员</h4>
+		</div>
+		<div class="panel-body">
+			<table class="table">
+				<thead>
+					<tr>
+						<th width="30%">姓名</th>
+						<th>邮箱</th>
+					</tr>
+				</thead>
+				<tbody>
+					#foreach ($member in $crew)
+					<tr>
+						<td>$member.fullname</td>
+						<td>$member.email</td>
+					</tr>
+					#end
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+#end

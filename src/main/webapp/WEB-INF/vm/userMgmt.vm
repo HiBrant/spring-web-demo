@@ -1,0 +1,217 @@
+<div class="col-md-12">
+	<div class="panel panel-primary">
+		<div class="panel-heading">
+			<h4>人员管理</h4>
+		</div>
+		<div class="panel-body">
+			<form class="form" id="add_user_form">
+				<div class="form-group col-xs-3">
+					<label>姓名</label>
+					<input type="text" name="fullname" class="form-control" />
+				</div>
+				<div class="form-group col-xs-4">
+					<label>邮箱</label>
+					<div class="input-group">
+						<input type="text" name="email" class="form-control" />
+						<span class="input-group-addon">@corp.netease.com</span>
+					</div>
+				</div>
+				<div class="form-group col-xs-2">
+					<label>角色</label>
+					<select class="form-control" name="role">
+						<option value="0">组员</option>
+						<option value="1">组长</option>
+						<option value="10">主管</option>
+					</select>
+				</div>
+				<div class="form-group col-xs-3">
+					<label>直接汇报人</label>
+					<select class="form-control" name="superiorId" id="superior_select">
+						<option value="-1">未指定</option>
+					</select>
+				</div>
+				<div class="form-group col-xs-12">
+					<button type="button" class="btn btn-primary pull-right" id="add_user_btn">添加</button>
+				</div>
+			</form>
+			
+			<table class="table table-striped" id="user_table">
+				<thead>
+					<tr>
+						<th>序号</th>
+						<th>姓名</th>
+						<th>邮箱</th>
+						<th class="col-xs-2">角色</th>
+						<th class="col-xs-2">直接汇报人</th>
+						<th class="col-xs-2">操作</th>
+					</tr>
+				</thead>
+				<tbody>
+					#foreach ($mem in $crew)
+					<tr>
+						<td>$velocityCount</td>
+						<td>$mem.fullname</td>
+						<td>$mem.email</td>
+						<td>$mem.roleName</td>
+						<td>$mem.superiorName</td>
+						<td>
+							<input type="hidden" name="userId" value="${mem.id}" />
+							<button type="button" class="btn btn-info update_user_btn">修改</button>
+							<button type="button" class="btn btn-danger remove_user_btn">移除</button>
+						</td>
+					</tr>
+					#end
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+<script type="text/javascript">
+$(function() {
+	function loadLeaderList(targetSelect) {
+		$.ajax({
+			url: "/wr/leaderList",
+			type: "get",
+			dataType: "json",
+			success: function(data) {
+				if (data.code == 0) {
+					targetSelect.empty();
+					targetSelect.append("<option value='-1'>未指定</option>");
+					$.each(data.list, function(i, e) {
+						targetSelect.append("<option value='" + e.id + "'>" + e.name + "</option>");
+					});
+				}
+			}
+		});
+	}
+	
+	loadLeaderList($("#superior_select"));
+	
+	$("#add_user_btn").click(function() {
+		var name = $("input[name='fullname']").val();
+		var email = $("input[name='email']").val();
+		var role = $("select[name='role']").val();
+		var roleName = $("select[name='role'] option:selected").text();
+		var superiorName = $("select[name='superiorId'] option:selected").text();
+		
+		$("#add_user_form").ajaxSubmit({
+			url: "/wr/addUser",
+			type: "post",
+			dataType: "json",
+			resetForm: true,
+			beforeSubmit: function() {
+				if ($.trim(name) == "") {
+					alert("姓名不能为空！");
+					return false;
+				}
+				if ($.trim(email) == "") {
+					alert("邮箱不能为空！");
+					return false;
+				}
+				return true;
+			},
+			success: function(data) {
+				if (data.code == 0) {
+					var tr = $("#user_table tbody tr");
+					var idx = parseInt(tr.eq(tr.length - 1).children("td").eq(0).text()) + 1;
+					if (isNaN(idx)) {
+						idx = 1;
+					}
+					html = '<tr>\
+						<td>' + idx + '</td>\
+						<td>' + name + '</td>\
+						<td>' + email + '@corp.netease.com</td>\
+						<td>' + roleName + '</td>\
+						<td>' + superiorName + '</td>\
+						<td>\
+							<input type="hidden" name="userId" value="' + data.userId + '" />\
+							<button type="button" class="btn btn-info update_user_btn">修改</button>\
+							<button type="button" class="btn btn-danger remove_user_btn">移除</button>\
+						</td>\
+					</tr>';
+					$("#user_table tbody").append(html);
+					
+					if (role > 0) {
+						loadLeaderList($("#superior_select"));
+					}
+				}
+			}
+		});
+	});
+	
+	$(document).on("click", ".remove_user_btn", function() {
+		if (confirm("确定要删除该用户吗？")) {
+			var tr = $(this).parent("td").parent("tr");
+			var roleName = tr.children("td").eq(3).text();
+			var userId = $(this).parent("td").children("input[name='userId']").val();
+			$.ajax({
+				url: "/wr/removeUser",
+				type: "post",
+				dataType: "json",
+				data: {
+					id: userId
+				},
+				success: function(data) {
+					if (data.code == 0) {
+						tr.remove();
+						if (roleName != "组员") {
+							loadLeaderList($("#superior_select"));
+						}
+					}
+				}
+			});
+		}
+	});
+	
+	$(document).on("click", ".update_user_btn", function() {
+		var tds = $(this).parent("td").parent("tr").children("td");
+		tds.eq(3).html('<select class="form-control" name="role">\
+							<option value="0">组员</option>\
+							<option value="1">组长</option>\
+							<option value="10">主管</option>\
+						</select>');
+						
+		var select = $('<select class="form-control"></select>');
+		tds.eq(4).empty();
+		select.appendTo(tds.eq(4));
+		loadLeaderList(select);
+		
+		$(this).text("确认");
+		$(this).attr("class", "btn btn-success update_confirm_btn");
+	});
+	
+	$(document).on("click", ".update_confirm_btn", function() {
+		if (confirm("确定要修改该用户？")) {
+			var userId = $(this).parent("td").children("input[name='userId']").val();
+			var tds = $(this).parent("td").parent("tr").children("td");
+			var td3Select = tds.eq(3).children("select");
+			var role = td3Select.val();
+			var roleName = td3Select.children("option:selected").text();
+			var td4Select = tds.eq(4).children("select");
+			var superiorId = td4Select.val();
+			var superiorName = td4Select.children("option:selected").text();
+			var btn = $(this);
+			
+			$.ajax({
+				url: "/wr/updateUser",
+				type: "post",
+				dataType: "json",
+				data: {
+					id: userId,
+					role: role,
+					superiorId: superiorId
+				},
+				success: function(data) {
+					if (data.code == 0) {
+						btn.text("修改");
+						btn.attr("class", "btn btn-info update_user_btn");
+						
+						tds.eq(3).html(roleName);
+						tds.eq(4).html(superiorName);
+					}
+				}
+			});
+		}
+	});
+});
+</script>

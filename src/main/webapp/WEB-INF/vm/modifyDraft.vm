@@ -1,0 +1,261 @@
+<form id="reportForm" method="post" class="form" action="/wr/onCreateReport">
+	<input type="hidden" name="reportId" value="$reportId" />
+	<div class="col-md-6">
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				<h4>基本信息</h4>
+			</div>
+			<div class="panel-body">
+				<table class="table">
+					<thead>
+						<tr>
+							<td><label>汇报人</label></td>
+							<td width="35%">$user.fullname</td>
+							<td><label>直接汇报</label></td>
+							<td width="35%">$superiorName</td>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td><label>开始日期</label></td>
+							<td><input type="text" name="startDate" class="datepicker form-control" title="基本信息-开始日期" value="$startDate" /></td>
+							<td><label>结束日期</label></td>
+							<td><input type="text" name="endDate" class="datepicker form-control" title="基本信息-结束日期" value="$endDate" /></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-12">
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				<h4>本周工作</h4>
+			</div>
+			<div class="panel-body">
+				<table id="done_table" class="table">
+					<thead>
+						<tr>
+							<th width="5%">序号</th>
+							<th class="col-xs-4">工作内容描述</th>
+							<th class="col-xs-1">完成率</th>
+							<th class="col-xs-1">是否延迟</th>
+							<th>开始日期</th>
+							<th>结束日期</th>
+							<th width="10%">工作承担人</th>
+							<th class="col-xs-1">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+						#foreach ($doneTask in $doneTasks)
+						<tr>
+							<td>$velocityCount</td>
+							<td><textarea name="doneContent" class="form-control" rows="3" title="本周工作-工作内容描述">$doneTask.content</textarea></td>
+							<td><input type="text" name="doneRate" class="form-control" style="display:inline;width:75%" title="本周工作-完成率" value="$doneTask.rate" />&nbsp;%</td>
+							<td>
+								<select name="doneDelay" class="form-control">
+								#if ($doneTask.delay)
+									<option value="true">是</option>
+									<option value="false">否</option>
+								#else
+									<option value="false">否</option>
+									<option value="true">是</option>
+								#end
+								</select>
+							</td>
+							<td><input type="text" name="doneStartDate" class="datepicker form-control" title="本周工作-开始日期" value="$dateTool.format("yyyy-MM-dd", $doneTask.startDate)" /></td>
+							<td><input type="text" name="doneEndDate" class="datepicker form-control" title="本周工作-结束日期" value="$dateTool.format("yyyy-MM-dd", $doneTask.endDate)" /></td>
+							<td><input type="text" name="doneOwner" value="$doneTask.owner" class="form-control" title="本周工作-工作承担人" /></td>
+							<td>
+								#if ($velocityCount == 1)
+								<button id="done_add_btn" type="button" class="btn btn-success">添加</button>
+								#else
+								<button type="button" class="btn btn-danger todo_remove_btn">删除</button>
+								#end
+							</td>
+						</tr>
+						#end
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-12">
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				<h4>下周工作</h4>
+			</div>
+			<div class="panel-body">
+				<table id="todo_table" class="table">
+					<thead>
+						<tr>
+							<th width="5%">序号</th>
+							<th class="col-xs-4">工作内容描述</th>
+							<th>预计开始日期</th>
+							<th>预计结束日期</th>
+							<th width="10%">工作承担人</th>
+							<th class="col-xs-1">操作</th>
+						</tr>
+					</thead>
+					<tbody>
+						#foreach ($todoTask in $todoTasks)
+						<tr>
+							<td>$velocityCount</td>
+							<td><textarea name="todoContent" class="form-control" rows="3" title="下周工作-工作内容描述">$todoTask.content</textarea></td>
+							<td><input type="text" name="todoStartDate" class="datepicker form-control" title="下周工作-预计开始日期" value="$dateTool.format("yyyy-MM-dd", $todoTask.startDate)" /></td>
+							<td><input type="text" name="todoEndDate" class="datepicker form-control" title="下周工作-预计结束日期" value="$dateTool.format("yyyy-MM-dd", $todoTask.endDate)" /></td>
+							<td><input type="text" name="todoOwner" value="$todoTask.owner" class="form-control" title="下周工作-工作承担人" /></td>
+							<td>
+								#if ($velocityCount == 1)
+								<button id="todo_add_btn" type="button" class="btn btn-success">添加</button>
+								#else
+								<button type="button" class="btn btn-danger todo_remove_btn">删除</button>
+								#end
+							</td>
+						</tr>
+						#end
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-6">
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				<h4>风险管理</h4>
+			</div>
+			<div class="panel-body">
+				<td><textarea name="risk" class="form-control" rows="3" title="风险管理">$others.risk</textarea></td>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-6">
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				<h4>建议、吐槽</h4>
+			</div>
+			<div class="panel-body">
+				<td><textarea name="suggestion" class="form-control" rows="3" title="建议、吐槽">$others.suggestion</textarea></td>
+			</div>
+		</div>
+	</div>
+	<div class="col-md-12">
+		<button id="report_submit_btn" type="button" class="btn btn-primary pull-right">提交</button>
+		<button id="report_save_btn" type="button" class="btn btn-default pull-right" style="margin-right: 10px;">保存</button>
+	</div>
+</form>
+<script type="text/javascript">
+$(function() {
+	$("#done_add_btn").click(function(event) {
+		event.preventDefault();
+		var tr = $("#done_table tbody tr");
+		var idx = parseInt(tr.eq(tr.length - 1).children("td").eq(0).text()) + 1;
+		if (isNaN(idx)) {
+			idx = 1;
+		}
+		var html = '<tr>\
+			<td>' + idx + '</td>\
+			<td><textarea name="doneContent" class="form-control" rows="3" title="本周工作-工作内容描述"></textarea></td>\
+			<td><input type="text" name="doneRate" value="100" class="form-control" style="display:inline;width:75%" title="本周工作-完成率" />&nbsp;%</td>\
+			<td>\
+				<select name="doneDelay" class="form-control">\
+					<option value="false">否</option>\
+					<option value="true">是</option>\
+				</select>\
+			</td>\
+			<td><input type="text" name="doneStartDate" class="datepicker form-control" title="本周工作-开始日期" value="$monday" /></td>\
+			<td><input type="text" name="doneEndDate" class="datepicker form-control" title="本周工作-结束日期" value="$friday" /></td>\
+			<td><input type="text" name="doneOwner" value="$user.fullname" class="form-control" title="本周工作-工作承担人" /></td>\
+			<td><button type="button" class="btn btn-danger done_remove_btn">删除</button></td>\
+		</tr>';
+		$("#done_table tbody").append(html);
+		
+		$(".datepicker").datepicker({
+			dateFormat: "yy-mm-dd"
+		});
+	});
+	
+	$(document).on("click", ".done_remove_btn", function() {
+		$(this).parent("td").parent("tr").remove();
+		var idx = 1;
+		$("#done_table tbody tr").each(function() {
+			$(this).children("td").eq(0).text(idx++);
+		});
+	});
+	
+	$("#todo_add_btn").click(function(event) {
+		event.preventDefault();
+		var tr = $("#todo_table tbody tr");
+		var idx = parseInt(tr.eq(tr.length - 1).children("td").eq(0).text()) + 1;
+		if (isNaN(idx)) {
+			idx = 1;
+		}
+		var html = '<tr>\
+			<td>' + idx + '</td>\
+			<td><textarea name="todoContent" class="form-control" rows="3" title="下周工作-工作内容描述"></textarea></td>\
+			<td><input type="text" name="todoStartDate" class="datepicker form-control" title="下周工作-预计开始日期" /></td>\
+			<td><input type="text" name="todoEndDate" class="datepicker form-control" title="下周工作-预计结束日期" /></td>\
+			<td><input type="text" name="todoOwner" value="$user.fullname" class="form-control" title="下周工作-工作承担人" /></td>\
+			<td><button type="button" class="btn btn-danger todo_remove_btn">删除</button></td>\
+		</tr>';
+		$("#todo_table tbody").append(html);
+		
+		$(".datepicker").datepicker({
+			dateFormat: "yy-mm-dd"
+		});
+	});
+	
+	$(document).on("click", ".todo_remove_btn", function() {
+		$(this).parent("td").parent("tr").remove();
+		var idx = 1;
+		$("#todo_table tbody tr").each(function() {
+			$(this).children("td").eq(0).text(idx++);
+		});
+	});
+	
+	$("#report_submit_btn").click(function() {
+		if (!confirm("确定提交？提交之后不可修改")) {
+			return;
+		}
+	
+		var array = $("#reportForm").serializeArray();
+		for (var i = 0; i < array.length; i++) {
+			var e = array[i];
+			if (e.name != "risk" && e.name != "suggestion") {
+				if ($.trim(e.value) == "") {
+					var label = $("[name='" + e.name + "']").attr("title");
+					alert("提交失败！【" + label + "】为空");
+					return;
+				}
+			}
+		}
+	
+		$("#reportForm").submit();
+	});
+	
+	$("#report_save_btn").click(function() {
+		var array = $("#reportForm").serializeArray();
+		for (var i = 0; i < array.length; i++) {
+			var e = array[i];
+			if (e.name != "risk" && e.name != "suggestion") {
+				if ($.trim(e.value) == "") {
+					var label = $("[name='" + e.name + "']").attr("title");
+					alert("保存失败！【" + label + "】为空");
+					return;
+				}
+			}
+		}
+	
+		if (!confirm("确定保存？")) {
+			return;
+		}
+	
+		$("#reportForm").attr("action", "/wr/onSaveReport");
+		$("#reportForm").submit();
+	});
+	
+	$(".datepicker").datepicker({
+		dateFormat: "yy-mm-dd"
+	});
+});
+</script>

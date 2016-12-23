@@ -1,0 +1,130 @@
+<div class="col-md-6">
+	<div class="panel panel-primary">
+		<div class="panel-heading">
+			<h4>基本信息</h4>
+		</div>
+		<div class="panel-body">
+			<table class="table">
+				<thead>
+					<tr>
+						<td><label>汇报人</label></td>
+						<td>$reporterName</td>
+						<td><label>直接汇报</label></td>
+						<td>$superiorName</td>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td><label>开始日期</label></td>
+						<td>$startDate</td>
+						<td><label>结束日期</label></td>
+						<td>$endDate</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+<div class="col-md-12">
+	<div class="panel panel-primary">
+		<div class="panel-heading">
+			<h4>本周工作</h4>
+		</div>
+		<div class="panel-body">
+			<table id="done_table" class="table table-striped">
+				<thead>
+					<tr>
+						<th>序号</th>
+						<th width="40%">工作内容描述</th>
+						<th>完成率</th>
+						<th>是否延迟</th>
+						<th>开始日期</th>
+						<th>结束日期</th>
+						<th>工作承担人</th>
+					</tr>
+				</thead>
+				<tbody>
+					#foreach ($doneTask in $doneTasks)
+					<tr>
+						<td>$velocityCount</td>
+						<td>$doneTask.content</td>
+						<td>$doneTask.rate%</td>
+						<td>
+							#if ($doneTask.delay)
+							是
+							#else
+							否
+							#end
+						</td>
+						<td>$dateTool.format("yyyy-MM-dd", $doneTask.startDate)</td>
+						<td>$dateTool.format("yyyy-MM-dd", $doneTask.endDate)</td>
+						<td>$doneTask.owner</td>
+					</tr>
+					#end
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+<div class="col-md-12">
+	<div class="panel panel-primary">
+		<div class="panel-heading">
+			<h4>下周工作</h4>
+		</div>
+		<div class="panel-body">
+			<table id="todo_table" class="table table-striped">
+				<thead>
+					<tr>
+						<th>序号</th>
+						<th width="50%">工作内容描述</th>
+						<th>预计开始日期</th>
+						<th>预计结束日期</th>
+						<th>工作承担人</th>
+					</tr>
+				</thead>
+				<tbody>
+					#foreach ($todoTask in $todoTasks)
+					<tr>
+						<td>$velocityCount</td>
+						<td>$todoTask.content</td>
+						<td>$dateTool.format("yyyy-MM-dd", $todoTask.startDate)</td>
+						<td>$dateTool.format("yyyy-MM-dd", $todoTask.endDate)</td>
+						<td>$todoTask.owner</td>
+					</tr>
+					#end
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+<div class="col-md-6">
+	<div class="panel panel-primary">
+		<div class="panel-heading">
+			<h4>风险管理</h4>
+		</div>
+		<div class="panel-body">
+			#if ($others.risk.length() == 0)
+			无
+			#else
+			$others.risk
+			#end
+		</div>
+	</div>
+</div>
+<div class="col-md-6">
+	<div class="panel panel-primary">
+		<div class="panel-heading">
+			<h4>建议、吐槽</h4>
+		</div>
+		<div class="panel-body">
+			#if ($others.suggestion.length() == 0)
+			无
+			#else
+			$others.suggestion
+			#end
+		</div>
+	</div>
+</div>
+<div class="col-md-12">
+	<a href="/wr/myReport" type="button" class="btn btn-primary pull-right">返回</a>
+</div>

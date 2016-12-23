@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.netease.yuedu.weekly.core.dao.ReportDoneTaskDao">
+	
+	<insert id="insertSome" parameterType="reportDoneTask">
+		insert into wr_reportDoneTask(reportId, content, rate, delay, startDate, endDate, owner, createtime) values 
+		<foreach collection="list" item="task" open="(" close=")" separator="),(" >
+			#{task.reportId}, #{task.content}, #{task.rate}, #{task.delay}, #{task.startDate}, #{task.endDate}, #{task.owner}, now()
+		</foreach>
+	</insert>
+	
+	<select id="getByReportId" resultType="reportDoneTask">
+		select * from wr_reportDoneTask
+		where reportId=#{reportId}
+		order by id asc;
+	</select>
+	
+	<delete id="deleteByReportId">
+		delete from wr_reportDoneTask
+		where reportId=#{reportId}
+	</delete>
+	
+</mapper>

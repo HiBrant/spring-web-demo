@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.netease.yuedu.weekly.core.dao.ReportOthersDao">
+	
+	<insert id="insertOne" parameterType="reportOthers">
+		insert into wr_reportOthers(reportId, risk, suggestion, createtime)
+		values (#{reportId}, #{risk}, #{suggestion}, now())
+	</insert>
+	
+	<select id="getByReportId" resultType="reportOthers">
+		select * from wr_reportOthers
+		where reportId=#{reportId}
+	</select>
+	
+	<delete id="deleteByReportId">
+		delete from wr_reportOthers
+		where reportId=#{reportId}
+	</delete>
+	
+</mapper>
